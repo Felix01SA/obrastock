@@ -157,12 +157,12 @@ export function ObraHeader({ obra, isConnected, lastEventTime }: ObraHeaderProps
                 <div className="flex items-center gap-1.5 sm:col-span-2 lg:col-span-3 text-slate-500">
                   <Calendar className="w-4 h-4 text-slate-400 shrink-0" />
                   <span>
-                    Início: <strong>{formatDate(obra.dataInicio, 'DD/MM/yyyy')}</strong>
+                    Início: <strong>{formatDate(obra.dataInicio, 'dd/MM/yyyy')}</strong>
                     {obra.previsaoTermino && (
                       <>
                         {' '}
                         • Previsão Conclusão:{' '}
-                        <strong>{formatDate(obra.previsaoTermino, 'DD/MM/yyyy')}</strong>
+                        <strong>{formatDate(obra.previsaoTermino, 'dd/MM/yyyy')}</strong>
                       </>
                     )}
                   </span>

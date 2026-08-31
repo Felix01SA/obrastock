@@ -94,7 +94,7 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: number;
+    defaultIDType: string;
   };
   fallbackLocale: null;
   globals: {};
@@ -134,7 +134,7 @@ export interface UserAuthOperations {
  * via the `definition` "obras".
  */
 export interface Obra {
-  id: number;
+  id: string;
   /**
    * Ex: Residencial Vista do Parque, Edifício Corporativo Alpha
    */
@@ -161,7 +161,7 @@ export interface Obra {
   };
   dataInicio?: string | null;
   previsaoTermino?: string | null;
-  foto?: (number | null) | Media;
+  foto?: (string | null) | Media;
   fotoUrl?: string | null;
   /**
    * Se desmarcado, a página pública desta obra ficará inacessível
@@ -182,7 +182,7 @@ export interface Obra {
  * via the `definition` "media".
  */
 export interface Media {
-  id: number;
+  id: string;
   alt?: string | null;
   caption?: string | null;
   updatedAt: string;
@@ -204,7 +204,7 @@ export interface Media {
  * via the `definition` "categorias".
  */
 export interface Categoria {
-  id: number;
+  id: string;
   nome: string;
   /**
    * Ex: alvenaria, ferramentas-eletricas, epis, hidraulica
@@ -223,7 +223,7 @@ export interface Categoria {
  * via the `definition` "itens".
  */
 export interface Iten {
-  id: number;
+  id: string;
   /**
    * Ex: Cimento CP-II 50kg, Furadeira de Impacto Bosch GSB 13 RE
    */
@@ -233,14 +233,14 @@ export interface Iten {
    */
   codigo: string;
   tipo: 'material_consumivel' | 'ferramenta_equipamento' | 'epi_seguranca';
-  categoria: number | Categoria;
+  categoria: string | Categoria;
   unidade:
     'un' | 'saco' | 'barra' | 'rolo' | 'cx' | 'pct' | 'kg' | 'ton' | 'm' | 'm2' | 'm3' | 'litro' | 'galao' | 'par';
   /**
    * Quantidade mínima recomendada para gerar alerta de reposição
    */
   estoqueMinimoPadrao?: number | null;
-  foto?: (number | null) | Media;
+  foto?: (string | null) | Media;
   /**
    * URL externa de imagem caso não faça upload de arquivo
    */
@@ -263,9 +263,9 @@ export interface Iten {
  * via the `definition` "estoque-obra".
  */
 export interface EstoqueObra {
-  id: number;
-  obra: number | Obra;
-  item: number | Iten;
+  id: string;
+  obra: string | Obra;
+  item: string | Iten;
   /**
    * Saldo físico atual disponível no almoxarifado
    */
@@ -294,9 +294,9 @@ export interface EstoqueObra {
  * via the `definition` "movimentacoes".
  */
 export interface Movimentacoe {
-  id: number;
-  obra: number | Obra;
-  item: number | Iten;
+  id: string;
+  obra: string | Obra;
+  item: string | Iten;
   tipo:
     | 'entrada'
     | 'saida'
@@ -316,9 +316,9 @@ export interface Movimentacoe {
    */
   frenteServico?: string | null;
   documentoReferencia?: string | null;
-  comprovante?: (number | null) | Media;
+  comprovante?: (string | null) | Media;
   observacoes?: string | null;
-  registradoPor?: (number | null) | User;
+  registradoPor?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -327,13 +327,13 @@ export interface Movimentacoe {
  * via the `definition` "users".
  */
 export interface User {
-  id: number;
+  id: string;
   name?: string | null;
   role: 'admin' | 'engenheiro' | 'almoxarife' | 'visualizador';
   /**
    * Deixe vazio para dar acesso a todas as obras
    */
-  obrasPermitidas?: (number | Obra)[] | null;
+  obrasPermitidas?: (string | Obra)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -358,7 +358,7 @@ export interface User {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: number;
+  id: string;
   key: string;
   data:
     | {
@@ -375,40 +375,40 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: number;
+  id: string;
   document?:
     | ({
         relationTo: 'obras';
-        value: number | Obra;
+        value: string | Obra;
       } | null)
     | ({
         relationTo: 'categorias';
-        value: number | Categoria;
+        value: string | Categoria;
       } | null)
     | ({
         relationTo: 'itens';
-        value: number | Iten;
+        value: string | Iten;
       } | null)
     | ({
         relationTo: 'estoque-obra';
-        value: number | EstoqueObra;
+        value: string | EstoqueObra;
       } | null)
     | ({
         relationTo: 'movimentacoes';
-        value: number | Movimentacoe;
+        value: string | Movimentacoe;
       } | null)
     | ({
         relationTo: 'media';
-        value: number | Media;
+        value: string | Media;
       } | null)
     | ({
         relationTo: 'users';
-        value: number | User;
+        value: string | User;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -418,10 +418,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: number;
+  id: string;
   user: {
     relationTo: 'users';
-    value: number | User;
+    value: string | User;
   };
   key?: string | null;
   value?:
@@ -441,7 +441,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: number;
+  id: string;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
