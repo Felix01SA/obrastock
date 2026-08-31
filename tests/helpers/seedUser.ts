@@ -1,9 +1,10 @@
 import { getPayload } from 'payload'
-import config from '../../src/payload.config.js'
+import config from '../../src/payload.config'
 
 export const testUser = {
   email: 'dev@payloadcms.com',
   password: 'test',
+  role: 'admin' as const,
 }
 
 /**

@@ -6,6 +6,11 @@ import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
 import { Users } from './collections/Users'
+import { Obras } from './collections/Obras'
+import { Categorias } from './collections/Categorias'
+import { Itens } from './collections/Itens'
+import { EstoqueObra } from './collections/EstoqueObra'
+import { Movimentacoes } from './collections/Movimentacoes'
 import { Media } from './collections/Media'
 
 const filename = fileURLToPath(import.meta.url)
@@ -17,16 +22,27 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    meta: {
+      titleSuffix: ' - Controle de Estoque & Almoxarifado de Obras',
+    },
   },
-  collections: [Users, Media],
+  collections: [
+    Obras,
+    Categorias,
+    Itens,
+    EstoqueObra,
+    Movimentacoes,
+    Media,
+    Users,
+  ],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: process.env.PAYLOAD_SECRET || 'super-secret-stock-key-1234567890',
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   db: sqliteAdapter({
     client: {
-      url: process.env.DATABASE_URL || '',
+      url: process.env.DATABASE_URL || 'file:./database.db',
     },
   }),
   sharp,

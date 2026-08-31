@@ -41,6 +41,8 @@ next-env.d.ts
 .env
 
 /media
+/public/media/*
+!/public/media/.gitkeep
 
 # Playwright
 node_modules/
@@ -48,3 +50,4 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+*.db

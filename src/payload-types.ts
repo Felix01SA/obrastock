@@ -67,8 +67,13 @@ export interface Config {
   };
   blocks: {};
   collections: {
-    users: User;
+    obras: Obra;
+    categorias: Categoria;
+    itens: Iten;
+    'estoque-obra': EstoqueObra;
+    movimentacoes: Movimentacoe;
     media: Media;
+    users: User;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,15 +81,20 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
-    users: UsersSelect<false> | UsersSelect<true>;
+    obras: ObrasSelect<false> | ObrasSelect<true>;
+    categorias: CategoriasSelect<false> | CategoriasSelect<true>;
+    itens: ItensSelect<false> | ItensSelect<true>;
+    'estoque-obra': EstoqueObraSelect<false> | EstoqueObraSelect<true>;
+    movimentacoes: MovimentacoesSelect<false> | MovimentacoesSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {};
@@ -118,11 +128,212 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Cadastro de obras e canteiros de construção civil
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "obras".
+ */
+export interface Obra {
+  id: number;
+  /**
+   * Ex: Residencial Vista do Parque, Edifício Corporativo Alpha
+   */
+  nome: string;
+  /**
+   * URL amigável para a página pública (ex: residencial-vista-do-parque)
+   */
+  slug: string;
+  /**
+   * Código interno (ex: OBR-001, EMP-2026)
+   */
+  codigo: string;
+  status: 'planejamento' | 'em_andamento' | 'pausada' | 'concluida';
+  responsavel: string;
+  contatoResponsavel?: string | null;
+  emailContato?: string | null;
+  endereco?: {
+    logradouro?: string | null;
+    numero?: string | null;
+    bairro?: string | null;
+    cidade?: string | null;
+    estado?: string | null;
+    cep?: string | null;
+  };
+  dataInicio?: string | null;
+  previsaoTermino?: string | null;
+  foto?: (number | null) | Media;
+  fotoUrl?: string | null;
+  /**
+   * Se desmarcado, a página pública desta obra ficará inacessível
+   */
+  publicaAtiva?: boolean | null;
+  /**
+   * Se marcado, os custos unitários e totais serão visíveis na página pública
+   */
+  exibirValores?: boolean | null;
+  descricao?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Imagens de materiais, canteiros de obra e comprovantes de entrega
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media".
+ */
+export interface Media {
+  id: number;
+  alt?: string | null;
+  caption?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Categorias de materiais, insumos, ferramentas e EPIs
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categorias".
+ */
+export interface Categoria {
+  id: number;
+  nome: string;
+  /**
+   * Ex: alvenaria, ferramentas-eletricas, epis, hidraulica
+   */
+  slug: string;
+  tipo: 'material' | 'ferramenta' | 'epi' | 'geral';
+  cor?: ('blue' | 'amber' | 'emerald' | 'purple' | 'rose' | 'slate') | null;
+  descricao?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Catálogo de materiais, insumos, ferramentas e EPIs
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "itens".
+ */
+export interface Iten {
+  id: number;
+  /**
+   * Ex: Cimento CP-II 50kg, Furadeira de Impacto Bosch GSB 13 RE
+   */
+  nome: string;
+  /**
+   * Código único para identificação rápida no almoxarifado
+   */
+  codigo: string;
+  tipo: 'material_consumivel' | 'ferramenta_equipamento' | 'epi_seguranca';
+  categoria: number | Categoria;
+  unidade:
+    'un' | 'saco' | 'barra' | 'rolo' | 'cx' | 'pct' | 'kg' | 'ton' | 'm' | 'm2' | 'm3' | 'litro' | 'galao' | 'par';
+  /**
+   * Quantidade mínima recomendada para gerar alerta de reposição
+   */
+  estoqueMinimoPadrao?: number | null;
+  foto?: (number | null) | Media;
+  /**
+   * URL externa de imagem caso não faça upload de arquivo
+   */
+  fotoUrl?: string | null;
+  marca?: string | null;
+  /**
+   * Identificador único da ferramenta física
+   */
+  numeroPatrimonio?: string | null;
+  estadoConservacao?: ('novo' | 'otimo' | 'bom' | 'em_manutencao' | 'danificado') | null;
+  custoUnitario?: number | null;
+  especificacoes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Saldo e localização de cada material/ferramenta em cada canteiro de obras
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "estoque-obra".
+ */
+export interface EstoqueObra {
+  id: number;
+  obra: number | Obra;
+  item: number | Iten;
+  /**
+   * Saldo físico atual disponível no almoxarifado
+   */
+  quantidade: number;
+  /**
+   * Gera alerta visual quando saldo for menor ou igual
+   */
+  estoqueMinimo?: number | null;
+  /**
+   * Ferramentas retiradas temporariamente por operários
+   */
+  quantidadeEmprestada?: number | null;
+  /**
+   * Ex: Container 1 - Prateleira A, Galpão Central, Pátio Areia
+   */
+  localizacao?: string | null;
+  ultimaMovimentacao?: string | null;
+  observacoes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Registro de entradas, saídas, empréstimos e devoluções no almoxarifado
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "movimentacoes".
+ */
+export interface Movimentacoe {
+  id: number;
+  obra: number | Obra;
+  item: number | Iten;
+  tipo:
+    | 'entrada'
+    | 'saida'
+    | 'emprestimo_ferramenta'
+    | 'devolucao_ferramenta'
+    | 'ajuste_inventario'
+    | 'transferencia_saida'
+    | 'transferencia_entrada';
+  quantidade: number;
+  dataHora: string;
+  /**
+   * Nome do colaborador ou empreiteiro que retirou
+   */
+  solicitante?: string | null;
+  /**
+   * Ex: Torre B - 4º Pavimento, Fundação, Elétrica Térreo
+   */
+  frenteServico?: string | null;
+  documentoReferencia?: string | null;
+  comprovante?: (number | null) | Media;
+  observacoes?: string | null;
+  registradoPor?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
+  name?: string | null;
+  role: 'admin' | 'engenheiro' | 'almoxarife' | 'visualizador';
+  /**
+   * Deixe vazio para dar acesso a todas as obras
+   */
+  obrasPermitidas?: (number | Obra)[] | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -144,29 +355,10 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media".
- */
-export interface Media {
-  id: string;
-  alt: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -183,20 +375,40 @@ export interface PayloadKv {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
-        relationTo: 'users';
-        value: string | User;
+        relationTo: 'obras';
+        value: number | Obra;
+      } | null)
+    | ({
+        relationTo: 'categorias';
+        value: number | Categoria;
+      } | null)
+    | ({
+        relationTo: 'itens';
+        value: number | Iten;
+      } | null)
+    | ({
+        relationTo: 'estoque-obra';
+        value: number | EstoqueObra;
+      } | null)
+    | ({
+        relationTo: 'movimentacoes';
+        value: number | Movimentacoe;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'users';
+        value: number | User;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -206,10 +418,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -229,7 +441,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -237,9 +449,132 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "obras_select".
+ */
+export interface ObrasSelect<T extends boolean = true> {
+  nome?: T;
+  slug?: T;
+  codigo?: T;
+  status?: T;
+  responsavel?: T;
+  contatoResponsavel?: T;
+  emailContato?: T;
+  endereco?:
+    | T
+    | {
+        logradouro?: T;
+        numero?: T;
+        bairro?: T;
+        cidade?: T;
+        estado?: T;
+        cep?: T;
+      };
+  dataInicio?: T;
+  previsaoTermino?: T;
+  foto?: T;
+  fotoUrl?: T;
+  publicaAtiva?: T;
+  exibirValores?: T;
+  descricao?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categorias_select".
+ */
+export interface CategoriasSelect<T extends boolean = true> {
+  nome?: T;
+  slug?: T;
+  tipo?: T;
+  cor?: T;
+  descricao?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "itens_select".
+ */
+export interface ItensSelect<T extends boolean = true> {
+  nome?: T;
+  codigo?: T;
+  tipo?: T;
+  categoria?: T;
+  unidade?: T;
+  estoqueMinimoPadrao?: T;
+  foto?: T;
+  fotoUrl?: T;
+  marca?: T;
+  numeroPatrimonio?: T;
+  estadoConservacao?: T;
+  custoUnitario?: T;
+  especificacoes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "estoque-obra_select".
+ */
+export interface EstoqueObraSelect<T extends boolean = true> {
+  obra?: T;
+  item?: T;
+  quantidade?: T;
+  estoqueMinimo?: T;
+  quantidadeEmprestada?: T;
+  localizacao?: T;
+  ultimaMovimentacao?: T;
+  observacoes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "movimentacoes_select".
+ */
+export interface MovimentacoesSelect<T extends boolean = true> {
+  obra?: T;
+  item?: T;
+  tipo?: T;
+  quantidade?: T;
+  dataHora?: T;
+  solicitante?: T;
+  frenteServico?: T;
+  documentoReferencia?: T;
+  comprovante?: T;
+  observacoes?: T;
+  registradoPor?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media_select".
+ */
+export interface MediaSelect<T extends boolean = true> {
+  alt?: T;
+  caption?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  name?: T;
+  role?: T;
+  obrasPermitidas?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -256,24 +591,6 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media_select".
- */
-export interface MediaSelect<T extends boolean = true> {
-  alt?: T;
-  updatedAt?: T;
-  createdAt?: T;
-  url?: T;
-  thumbnailURL?: T;
-  filename?: T;
-  mimeType?: T;
-  filesize?: T;
-  width?: T;
-  height?: T;
-  focalX?: T;
-  focalY?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
