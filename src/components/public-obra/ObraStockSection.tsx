@@ -26,7 +26,7 @@ import {
   Eye,
   SlidersHorizontal,
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { Progress } from '../ui/progress'
 
 interface ObraStockSectionProps {
   estoques: any[]
@@ -313,11 +313,8 @@ export function ObraStockSection({ estoques, categorias, onSelectItem }: ObraSto
                   {/* Badge de Status de Estoque */}
                   <div className="absolute top-2 right-2">
                     <Badge
-                      variant={status.variant === 'destructive' ? 'destructive' : 'default'}
-                      className={cn(
-                        status.variant === 'warning' ? status.colorClass : '',
-                        'shadow-xs backdrop-blur-xs font-bold text-[11px]',
-                      )}
+                      variant={status.variant}
+                      className="shadow-xs backdrop-blur-xs font-bold text-[11px]"
                     >
                       {status.label}
                     </Badge>
@@ -356,11 +353,8 @@ export function ObraStockSection({ estoques, categorias, onSelectItem }: ObraSto
                       </span>
                     </div>
 
-                    <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${status.colorClass} transition-all duration-500`}
-                        style={{ width: `${Math.max(5, status.percentage)}%` }}
-                      />
+                    <div className="w-full overflow-hidden">
+                      <Progress value={status.percentage} variant={status.variant} />
                     </div>
 
                     <div className="flex items-center justify-between text-[11px] text-slate-400">
@@ -484,10 +478,7 @@ export function ObraStockSection({ estoques, categorias, onSelectItem }: ObraSto
                     </TableCell>
 
                     <TableCell className="text-center">
-                      <Badge
-                        variant={status.variant === 'destructive' ? 'destructive' : 'default'}
-                        className="text-[10px]"
-                      >
+                      <Badge variant={status.variant} className="text-[10px]">
                         {status.label}
                       </Badge>
                     </TableCell>

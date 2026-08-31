@@ -106,7 +106,7 @@ export function ObraMovementsTimeline({ movimentacoes }: ObraMovementsTimelinePr
                 >
                   {/* Ponto / Ícone na Linha do Tempo */}
                   <div
-                    className={`absolute -left-[30px] top-1 w-6 h-6 rounded-full flex items-center justify-center ${config.iconBg} shadow-xs ring-4 ring-white dark:ring-slate-900`}
+                    className={`absolute -left-7.5 top-1 w-6 h-6 rounded-full flex items-center justify-center ${config.iconBg} shadow-xs ring-4 ring-white dark:ring-slate-900`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                   </div>

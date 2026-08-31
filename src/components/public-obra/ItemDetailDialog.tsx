@@ -20,6 +20,7 @@ import {
   Layers,
 } from 'lucide-react'
 import { format } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
 
 interface ItemDetailDialogProps {
   stockItem: any | null
@@ -203,7 +204,7 @@ export function ItemDetailDialog({
                 {itemMovements.map((mov) => (
                   <div
                     key={mov.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 text-xs gap-2"
+                    className="grid grid-cols-1 sm:grid-cols-3 sm:items-center justify-between p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 text-xs gap-2"
                   >
                     <div className="flex items-center gap-2">
                       {getMovementBadge(mov.tipo)}
@@ -212,19 +213,20 @@ export function ItemDetailDialog({
                       </span>
                     </div>
 
-                    <div className="text-slate-600 dark:text-slate-300">
+                    <div className="text-slate-600 dark:text-slate-300 flex flex-col flex-1 justify-start items-start ml-2">
                       {mov.solicitante && (
                         <span>
                           Por: <strong>{mov.solicitante}</strong>
                         </span>
                       )}
+
                       {mov.frenteServico && (
-                        <span className="text-slate-400 ml-2">({mov.frenteServico})</span>
+                        <span className="text-slate-400">{mov.frenteServico}</span>
                       )}
                     </div>
 
-                    <span className="text-[11px] text-slate-400 font-mono">
-                      {format(mov.dataHora, 'PPPP')}
+                    <span className="text-[11px] text-slate-400 font-mono text-end">
+                      {format(mov.dataHora, 'dd/MM/yyyy', { locale: ptBR })}
                     </span>
                   </div>
                 ))}
