@@ -18,15 +18,18 @@ import {
   ShieldCheck,
   Wrench,
   Layers,
+  Coins,
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
+import { formatCurrency } from '@/lib/utils'
 
 interface ItemDetailDialogProps {
   stockItem: any | null
   open: boolean
   onOpenChange: (open: boolean) => void
   itemMovements: any[]
+  exibirValores?: boolean
 }
 
 export function ItemDetailDialog({
@@ -34,6 +37,7 @@ export function ItemDetailDialog({
   open,
   onOpenChange,
   itemMovements,
+  exibirValores = false,
 }: ItemDetailDialogProps) {
   if (!stockItem) return null
 
@@ -41,6 +45,26 @@ export function ItemDetailDialog({
   const categoria = typeof item.categoria === 'object' ? item.categoria : null
   const minStock = stockItem.estoqueMinimo ?? item.estoqueMinimoPadrao ?? 0
   const isLowStock = minStock > 0 && stockItem.quantidade <= minStock
+
+  const custoUnitario =
+    typeof item.custoUnitario === 'number'
+      ? item.custoUnitario
+      : Number(item.custoUnitario) || 0
+  const hasCusto = custoUnitario > 0
+  const shouldShowFinancials = Boolean(exibirValores && hasCusto)
+
+  const saldoAtual = Number(stockItem.quantidade) || 0
+  const totalEmSaldo = saldoAtual * custoUnitario
+
+  // Total de entradas registradas no histórico desta obra
+  const totalEntradasQtd = itemMovements
+    .filter((m: any) => m.tipo === 'entrada' || m.tipo === 'transferencia_entrada')
+    .reduce((acc: number, m: any) => acc + (Number(m.quantidade) || 0), 0)
+
+  const totalGastoEntradas =
+    totalEntradasQtd > 0
+      ? totalEntradasQtd * custoUnitario
+      : (saldoAtual + (Number(stockItem.quantidadeEmprestada) || 0)) * custoUnitario
 
   const getTipoLabel = (tipo: string) => {
     switch (tipo) {
@@ -155,6 +179,55 @@ export function ItemDetailDialog({
               </div>
             </div>
           </div>
+
+          {/* Exibição de Valores Financeiros (Condicional à configuração da Obra e existência do Custo) */}
+          {shouldShowFinancials && (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20 space-y-3">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                  <Coins className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                  Valores Financeiros
+                </h4>
+                <Badge variant="success" className="text-[10px]">
+                  Exibição de Valores Ativa
+                </Badge>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-emerald-100 dark:border-emerald-900/40">
+                  <p className="text-[11px] font-semibold text-slate-500 uppercase">
+                    Valor por Unidade
+                  </p>
+                  <p className="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">
+                    {formatCurrency(custoUnitario)}
+                    <span className="text-xs font-normal text-slate-500 dark:text-slate-400 ml-1">
+                      / {item.unidade || 'un'}
+                    </span>
+                  </p>
+                </div>
+
+                <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-emerald-100 dark:border-emerald-900/40">
+                  <p className="text-[11px] font-semibold text-slate-500 uppercase">
+                    Total em Saldo ({saldoAtual} {item.unidade || 'un'})
+                  </p>
+                  <p className="text-xl font-extrabold text-emerald-700 dark:text-emerald-300">
+                    {formatCurrency(totalEmSaldo)}
+                  </p>
+                </div>
+
+                {totalEntradasQtd > 0 && (
+                  <div className="sm:col-span-2 p-2.5 bg-emerald-100/60 dark:bg-emerald-900/30 rounded-lg text-xs text-emerald-900 dark:text-emerald-200 flex flex-wrap items-center justify-between gap-1">
+                    <span>
+                      Total Gasto em Entradas Registradas ({totalEntradasQtd} {item.unidade || 'un'}):
+                    </span>
+                    <span className="font-bold text-sm">
+                      {formatCurrency(totalGastoEntradas)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Dados Específicos do Item */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">

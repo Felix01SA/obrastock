@@ -276,6 +276,7 @@ export function ObraViewClient({
         open={detailDialogOpen}
         onOpenChange={setDetailDialogOpen}
         itemMovements={selectedItemMovements}
+        exibirValores={obra?.exibirValores}
       />
     </div>
   )
