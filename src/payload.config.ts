@@ -26,15 +26,7 @@ export default buildConfig({
       titleSuffix: ' - Controle de Estoque & Almoxarifado de Obras',
     },
   },
-  collections: [
-    Obras,
-    Categorias,
-    Itens,
-    EstoqueObra,
-    Movimentacoes,
-    Media,
-    Users,
-  ],
+  collections: [Obras, Categorias, Itens, EstoqueObra, Movimentacoes, Media, Users],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || 'super-secret-stock-key-1234567890',
   typescript: {
@@ -43,6 +35,7 @@ export default buildConfig({
   db: sqliteAdapter({
     client: {
       url: process.env.DATABASE_URL || 'file:./database.db',
+      authToken: process.env.DATABASE_TOKEN || '',
     },
   }),
   sharp,
