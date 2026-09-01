@@ -47,9 +47,7 @@ export function ItemDetailDialog({
   const isLowStock = minStock > 0 && stockItem.quantidade <= minStock
 
   const custoUnitario =
-    typeof item.custoUnitario === 'number'
-      ? item.custoUnitario
-      : Number(item.custoUnitario) || 0
+    typeof item.custoUnitario === 'number' ? item.custoUnitario : Number(item.custoUnitario) || 0
   const hasCusto = custoUnitario > 0
   const shouldShowFinancials = Boolean(exibirValores && hasCusto)
 
@@ -218,11 +216,10 @@ export function ItemDetailDialog({
                 {totalEntradasQtd > 0 && (
                   <div className="sm:col-span-2 p-2.5 bg-emerald-100/60 dark:bg-emerald-900/30 rounded-lg text-xs text-emerald-900 dark:text-emerald-200 flex flex-wrap items-center justify-between gap-1">
                     <span>
-                      Total Gasto em Entradas Registradas ({totalEntradasQtd} {item.unidade || 'un'}):
+                      Total Gasto em Entradas Registradas ({totalEntradasQtd} {item.unidade || 'un'}
+                      ):
                     </span>
-                    <span className="font-bold text-sm">
-                      {formatCurrency(totalGastoEntradas)}
-                    </span>
+                    <span className="font-bold text-sm">{formatCurrency(totalGastoEntradas)}</span>
                   </div>
                 )}
               </div>
@@ -299,7 +296,7 @@ export function ItemDetailDialog({
                     </div>
 
                     <span className="text-[11px] text-slate-400 font-mono text-end">
-                      {format(mov.dataHora, 'dd/MM/yyyy', { locale: ptBR })}
+                      {format(mov.dataHora, 'Pp', { locale: ptBR })}
                     </span>
                   </div>
                 ))}

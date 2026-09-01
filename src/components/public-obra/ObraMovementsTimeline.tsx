@@ -130,7 +130,7 @@ export function ObraMovementsTimeline({ movimentacoes }: ObraMovementsTimelinePr
 
                       <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
                         <Clock className="w-3 h-3" />
-                        {formatDate(mov.dataHora, 'PPPP', { locale: ptBR })}
+                        {formatDate(mov.dataHora, 'PPPPp', { locale: ptBR })}
                       </span>
                     </div>
 
