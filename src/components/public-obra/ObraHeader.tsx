@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
+  FileDown,
 } from 'lucide-react'
 import { formatDate } from 'date-fns'
 import {
@@ -24,14 +25,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { exportStockToPDF } from '@/lib/export-stock-pdf'
 
 interface ObraHeaderProps {
   obra: any
   isConnected: boolean
   lastEventTime: Date | null
+  estoques?: any[]
 }
 
-export function ObraHeader({ obra, isConnected, lastEventTime }: ObraHeaderProps) {
+export function ObraHeader({ obra, isConnected, lastEventTime, estoques = [] }: ObraHeaderProps) {
   const [copied, setCopied] = useState(false)
   const [qrOpen, setQrOpen] = useState(false)
 
@@ -173,6 +176,19 @@ export function ObraHeader({ obra, isConnected, lastEventTime }: ObraHeaderProps
 
           {/* Botões de Ação e Compartilhamento */}
           <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
+            {estoques.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportStockToPDF({ obra, estoques })}
+                className="gap-1.5 text-slate-700 dark:text-slate-200 shadow-xs hover:border-rose-300 dark:hover:border-rose-800"
+                title="Exportar relatório completo em PDF"
+              >
+                <FileDown className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                <span>Exportar PDF</span>
+              </Button>
+            )}
+
             <Button variant="outline" size="sm" onClick={() => setQrOpen(true)} className="gap-1.5">
               <QrCode className="w-4 h-4 text-slate-600 dark:text-slate-300" />
               <span>QR Code da Obra</span>

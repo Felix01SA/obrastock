@@ -142,7 +142,12 @@ export function ObraViewClient({
   return (
     <div className="min-h-screen pb-16">
       {/* Header Superior da Obra com SSE Live Indicator */}
-      <ObraHeader obra={obra} isConnected={isConnected} lastEventTime={lastEventTime} />
+      <ObraHeader
+        obra={obra}
+        isConnected={isConnected}
+        lastEventTime={lastEventTime}
+        estoques={estoques}
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
         {/* Métricas Principais (KPIs) */}
@@ -176,6 +181,7 @@ export function ObraViewClient({
               estoques={estoques}
               categorias={categorias}
               onSelectItem={handleSelectItem}
+              obra={obra}
             />
           </TabsContent>
 

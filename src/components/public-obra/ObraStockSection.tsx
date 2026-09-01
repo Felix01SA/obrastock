@@ -25,16 +25,24 @@ import {
   MapPin,
   Eye,
   SlidersHorizontal,
+  FileDown,
 } from 'lucide-react'
 import { Progress } from '../ui/progress'
+import { exportStockToPDF } from '@/lib/export-stock-pdf'
 
 interface ObraStockSectionProps {
   estoques: any[]
   categorias: any[]
   onSelectItem: (stockItem: any) => void
+  obra?: any
 }
 
-export function ObraStockSection({ estoques, categorias, onSelectItem }: ObraStockSectionProps) {
+export function ObraStockSection({
+  estoques,
+  categorias,
+  onSelectItem,
+  obra,
+}: ObraStockSectionProps) {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedType, setSelectedType] = useState<string>('todos')
   const [selectedCategory, setSelectedCategory] = useState<string>('todas')
@@ -150,6 +158,20 @@ export function ObraStockSection({ estoques, categorias, onSelectItem }: ObraSto
           </div>
 
           <div className="flex items-center gap-2 self-end sm:self-auto">
+            {obra && filteredItems.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => exportStockToPDF({ obra, estoques: filteredItems })}
+                className="gap-1.5 h-8 text-xs font-medium text-slate-700 dark:text-slate-200 hover:border-rose-300 dark:hover:border-rose-800"
+                title="Exportar inventário filtrado em PDF"
+              >
+                <FileDown className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                <span className="hidden sm:inline">Exportar PDF</span>
+                <span className="sm:hidden">PDF</span>
+              </Button>
+            )}
+
             <div className="inline-flex rounded-lg border border-slate-200 dark:border-slate-700 p-0.5 bg-slate-100 dark:bg-slate-800">
               <button
                 onClick={() => setViewMode('grid')}
