@@ -57,7 +57,11 @@ export function exportStockToPDF({ obra, estoques, filtroInfo }: ExportStockPDFP
 
   doc.text(`Localização: ${enderecoTxt}`, 14, 36)
   if (obra.responsavel) {
-    doc.text(`Responsável Técnico: ${obra.responsavel} ${obra.contatoResponsavel ? `(${obra.contatoResponsavel})` : ''}`, 14, 41)
+    doc.text(
+      `Responsável Técnico: ${obra.responsavel} ${obra.contatoResponsavel ? `(${obra.contatoResponsavel})` : ''}`,
+      14,
+      41,
+    )
   }
 
   // 3. Indicadores de Resumo (Cards)
@@ -75,7 +79,7 @@ export function exportStockToPDF({ obra, estoques, filtroInfo }: ExportStockPDFP
   const valorTotalEstoque = estoques.reduce((acc, est) => {
     const custo = Number(est.item?.custoUnitario) || 0
     const qtd = Number(est.quantidade) || 0
-    return acc + (qtd * custo)
+    return acc + qtd * custo
   }, 0)
 
   const cardY = 46
@@ -93,11 +97,19 @@ export function exportStockToPDF({ obra, estoques, filtroInfo }: ExportStockPDFP
   doc.text(`${totalItens} cadastrados`, 18, cardY + 10)
 
   // Box Estoque Baixo / Alerta
-  doc.setFillColor(itensBaixoEstoque > 0 ? 254 : 241, itensBaixoEstoque > 0 ? 242 : 245, itensBaixoEstoque > 0 ? 242 : 249) // rose-50 ou slate-100
+  doc.setFillColor(
+    itensBaixoEstoque > 0 ? 254 : 241,
+    itensBaixoEstoque > 0 ? 242 : 245,
+    itensBaixoEstoque > 0 ? 242 : 249,
+  ) // rose-50 ou slate-100
   doc.roundedRect(78, cardY, 65, cardHeight, 1.5, 1.5, 'F')
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(8)
-  doc.setTextColor(itensBaixoEstoque > 0 ? 190 : 100, itensBaixoEstoque > 0 ? 18 : 116, itensBaixoEstoque > 0 ? 60 : 139) // rose-700
+  doc.setTextColor(
+    itensBaixoEstoque > 0 ? 190 : 100,
+    itensBaixoEstoque > 0 ? 18 : 116,
+    itensBaixoEstoque > 0 ? 60 : 139,
+  ) // rose-700
   doc.text('ESTOQUE BAIXO / CRÍTICO', 82, cardY + 5)
   doc.setFontSize(10)
   doc.text(`${itensBaixoEstoque} itens em alerta`, 82, cardY + 10)
@@ -251,7 +263,9 @@ export function exportStockToPDF({ obra, estoques, filtroInfo }: ExportStockPDFP
     doc.setFontSize(8)
     doc.setTextColor(71, 85, 105)
     doc.text('Almoxarife / Responsável pela Conferência', 70, signY + 4, { align: 'center' })
-    doc.text('Engenheiro / Gestor do Canteiro de Obras', pageWidth - 70, signY + 4, { align: 'center' })
+    doc.text('Engenheiro / Gestor do Canteiro de Obras', pageWidth - 70, signY + 4, {
+      align: 'center',
+    })
   }
 
   // 7. Salvar e disparar download do PDF
