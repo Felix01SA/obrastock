@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,6 +17,7 @@ import {
   Clock,
   AlertCircle,
   FileDown,
+  BarChart3,
 } from 'lucide-react'
 import { formatDate } from 'date-fns'
 import {
@@ -176,12 +178,24 @@ export function ObraHeader({ obra, isConnected, lastEventTime, estoques = [] }: 
 
           {/* Botões de Ação e Compartilhamento */}
           <div className="flex flex-wrap items-center gap-2 self-start lg:self-center">
+            <Link href={`/dashboard/${obra?.slug}`}>
+              <Button
+                variant="default"
+                size="sm"
+                className="gap-1.5 bg-blue-600 hover:bg-blue-700 text-white shadow-xs text-xs font-semibold"
+                title="Acessar painel analítico e gráficos de consumo"
+              >
+                <BarChart3 className="w-4 h-4" />
+                <span>Dashboard de Consumo</span>
+              </Button>
+            </Link>
+
             {estoques.length > 0 && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => exportStockToPDF({ obra, estoques })}
-                className="gap-1.5 text-slate-700 dark:text-slate-200 shadow-xs hover:border-rose-300 dark:hover:border-rose-800"
+                className="gap-1.5 text-slate-700 dark:text-slate-200 shadow-xs hover:border-rose-300 dark:hover:border-rose-800 text-xs"
                 title="Exportar relatório completo em PDF"
               >
                 <FileDown className="w-4 h-4 text-rose-600 dark:text-rose-400" />
@@ -189,12 +203,12 @@ export function ObraHeader({ obra, isConnected, lastEventTime, estoques = [] }: 
               </Button>
             )}
 
-            <Button variant="outline" size="sm" onClick={() => setQrOpen(true)} className="gap-1.5">
+            <Button variant="outline" size="sm" onClick={() => setQrOpen(true)} className="gap-1.5 text-xs">
               <QrCode className="w-4 h-4 text-slate-600 dark:text-slate-300" />
               <span>QR Code da Obra</span>
             </Button>
 
-            <Button variant="outline" size="sm" onClick={handleShare} className="gap-1.5">
+            <Button variant="outline" size="sm" onClick={handleShare} className="gap-1.5 text-xs">
               <Share2 className="w-4 h-4 text-slate-600 dark:text-slate-300" />
               <span>{copied ? 'Link Copiado!' : 'Compartilhar'}</span>
             </Button>
